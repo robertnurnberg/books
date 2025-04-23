@@ -28,9 +28,14 @@ def get_stats_and_sri(compressedbook):
                 white += 1
             elif fields[1] == "b":
                 black += 1
+            else:
+                print("Error: Invalid FEN {line}")
+                return {}
         if len(fields) > 5 and fields[5].isdigit():
-            min_depth = min(min_depth, int(fields[5]))
-            max_depth = max(max_depth, int(fields[5]))
+            move = int(fields[5])
+            ply = (move - 1) * 2 if fields[1] == "w" else (move - 1) * 2 + 1
+            min_depth = min(min_depth, ply)
+            max_depth = max(max_depth, ply)
 
     if min_depth > max_depth:
         min_depth = max_depth = None
