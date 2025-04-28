@@ -45,17 +45,23 @@ def get_stats_and_sri(compressedbook, old_stats):
                 min_depth = min(min_depth, ply)
                 max_depth = max(max_depth, ply)
     elif book.endswith(".pgn"):
-        while True:
-            game = chess.pgn.read_game(io.StringIO(content))
-            if game is None:
-                break
-            ply = game.ply() + len(list(game.mainline_moves()))
-            min_depth = min(min_depth, ply)
-            max_depth = max(max_depth, ply)
-            if ply % 2:
-                black += 1
-            else:
-                white += 1
+        pgn_stream = io.StringIO(content)
+        try:  # needed for e.g. startpos_chess960.pgn with incorrect FEN syntax
+            while True:
+                game = chess.pgn.read_game(pgn_stream)
+                if game is None:
+                    break
+                ply = game.ply() + len(list(game.mainline_moves()))
+                min_depth = min(min_depth, ply)
+                max_depth = max(max_depth, ply)
+                if ply % 2:
+                    black += 1
+                else:
+                    white += 1
+        except Exception as ex:
+            white = black = 0
+            min_depth = 2**16
+            max_depth = -1
 
     if min_depth > max_depth:
         min_depth = max_depth = None
