@@ -14,7 +14,7 @@ def get_stats_and_sri(compressedbook, old_stats):
         with zipfile.ZipFile(compressedbook) as zip_file:
             content_bytes = zip_file.read(book)
     if content_bytes is None:
-        return {}
+        return book, {}
 
     sri = base64.b64encode(hashlib.sha384(content_bytes).digest()).decode("utf8")
 
@@ -38,7 +38,7 @@ def get_stats_and_sri(compressedbook, old_stats):
                     black += 1
                 else:
                     print("Error: Invalid FEN {line}")
-                    return {}
+                    return book, {}
             if len(fields) > 5 and fields[5].isdigit():
                 move = int(fields[5])
                 ply = (move - 1) * 2 if fields[1] == "w" else (move - 1) * 2 + 1
